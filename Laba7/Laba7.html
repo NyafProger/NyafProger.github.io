@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+  <!-- As a heading -->
+<nav class="navbar navbar-light bg-light">
+  <a class="navbar-brand" href="./../index.html">Функціональне програмування</a>
+  
+</nav>
+
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+<body >
+<div class="text-center"> 
+  <h3>Лабораторна робота 7</h3>
+  <h4>Обробка рядків та файлів мовами функціонального програмування</h4>
+  <h4> Варіант 12</h4>
+</div>
+<div class="row d-flex justify-content-center">
+    <ul class="list-group">
+
+  <a href="#goal" class="text">Мета</a>
+  <a href="#task1" class="text">Завдання 1</a>
+  <a href="#t1anal" class="text">Аналіз завдання</a>
+  <a href="#t1code" class="text">Код програми з коментарями</a>
+  <a href="#res1" class="text">Результат</a>
+  <a href="#conc" class="text">Висновок</a>
+</ul>   
+<div class="card mb-3" style="width: 100rem;">
+  <div class="card-body">
+
+<p id="goal"><strong>Мета:</strong> Опанувати теоретичні основи обробки рядків та текстових файлів мовами функціонального програмування та розробити програми їх реалізації.</p>
+<p id="t1anal"><strong>Ніро-діаграма</strong></p>
+<img src="./nn.png" alt="">
+<h2 id="task1"><strong>Завдання 1</strong></h2>
+<p>12.		Записати в текстовий файл n рядків тексту, що задаються програмою на функціональній мові програмування. Зчитати рядки із створеного програмою файлу, вивести їх на екран. Визначити однакові слова в кожному рядку, надрукувати їх та їх кількість. Записати в новий текстовий файл однакові слова кожного рядка.</p>
+<p id="t1anal"><strong>Аналіз завдання</strong></p>
+<p>При виконанні даного завдання,було використано вбудовані функції зчитування та запису файлу. Також було використано вбудовану функцію підрахунку кількості елементу в масиві. </p>
+<p id="t1code"><strong>Код програми</strong></p>
+<pre>
+<code>#lang racket
+
+    ;функція для запису в файл трьох рядків
+    (define (writeFile)
+      (let ((port (open-output-file "C:\\Users\\kuzme\\OneDrive\\Рабочий стол\\uu\\file1.txt"))) 
+      (display "Hello word, Hello Hello word" port)
+    (display "Oh sweet day, sweet day day \n" port)
+    (display "Let it go, Let it be\n" port)
+    (close-output-port port))
+      )
+    
+    ;функція для зчитування файлу
+    (define (readFile)
+      (let ((port (open-input-file "C:\\Users\\kuzme\\OneDrive\\Рабочий стол\\uu\\file1.txt")))
+        (readHelper port)
+        (close-input-port port)
+        )
+      )
+    
+    ;функція яка зчитує по черзі рядки з файла
+    (define (readHelper file)
+    (let ((line (read-line file)))            
+          (if (eof-object? line)     
+            (display "File Read Finished\n")
+            (begin (display line)
+                   (display "\n")
+                  (readHelper file))))
+      )
+    
+    ;функція, що відкриває один файл для зчитування, а інший на записування
+    (define (modifyFile)
+      (let ((portOut (open-output-file "C:\\Users\\kuzme\\OneDrive\\Рабочий стол\\uu\\file2.txt"))
+          (portIn (open-input-file "C:\\Users\\kuzme\\OneDrive\\Рабочий стол\\uu\\file1.txt"))
+          (resultingWords (list )))
+        (modHelper portIn portOut resultingWords)
+        (close-input-port portIn)
+      (close-output-port portOut)
+     ))
+    
+    ;функція яка приймає рядок з файлу та визиває функцію пошуку дублікатів
+    (define (modHelper inputFile outputFile resultingWords)
+    (let ((line (read-line inputFile)))            
+          (if (eof-object? line)     
+            (display "File Mod Finished\n")
+            (begin
+              (display  "\n" outputFile)
+              (display resultingWords)
+              ; визиває функцію пошуку дублікатів
+              (findDuplicates 0 (string-split  line) outputFile resultingWords)
+              ;рекурсивно визивається функція, але вже з наступним рядком
+              (modHelper inputFile outputFile resultingWords)))
+      ))
+    
+    ;функція для пошуку дублікатів в рядку
+    (define (findDuplicates index wordsArray file resultingWords)
+      ; виконується умова, якщо слово повторюється більшк ніж 1 раз, і ще не нема в масиві
+      (cond [(and (not (= 1 (count (lambda(arg) (equal? arg (list-ref  wordsArray index))) wordsArray))) (= 0 (count (lambda(arg) (equal? arg (list-ref  wordsArray index))) resultingWords)))
+          (begin
+            ; виводимо слово яке повторювалось більше ніж 1 раз
+            (display (list-ref  wordsArray index) file)
+            (display "=" file)
+            ; рахуємо та виводимо кількість повторювань
+            (display (count (lambda(arg) (equal? arg (list-ref  wordsArray index))) wordsArray) file)
+            (display " " file)
+            ;записуємо до масиву, аби повторювальне слово не вивести ще раз
+            (set! resultingWords (append resultingWords (list (list-ref  wordsArray index))))
+            (display resultingWords)
+            )
+          ]
+      )
+      (cond
+        [(< (+ 1 index) (length wordsArray))  (findDuplicates (+ 1 index) wordsArray file resultingWords)]) ;рекурсивно переходимо до іншого слова у рядку
+      )
+    
+    (writeFile)
+    (modifyFile)
+    
+    (readFile)
+</code>
+</pre>
+
+<p id="res1"><strong>Результати</strong></p>
+<img src="./pp1.png" alt="n">
+<p id="anal2"><strong>Оцінка достовірності результату</strong></p>
+<p>Можно побачити, що в файл1 записалися наші строки. А в файл2 було записано слова та їх кількість повторюваності. Як можно бачити на малюнку, кількість справді співпадає з тим що записано в файлі1.
+  Таким чином, можно зробити висновок, що програма відпрацьовує коректно.
+</p> 
+<p id="conc"><strong>Висновки</strong></p>
+<p>В лабораторній роботі було реалізовано завдання, що передбачає маніпуляції з рядками, їх запис і зчитування з файлів.
+  В цілому, завдання є доволі тривіальним та не викликали ніяких труднощів.</p>
+  </div>
+  </div>  
+</div>
+
+</body>
+</html>

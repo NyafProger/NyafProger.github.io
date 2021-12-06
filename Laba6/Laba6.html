@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+  <!-- As a heading -->
+<nav class="navbar navbar-light bg-light">
+  <a class="navbar-brand" href="./../index.html">Функціональне програмування</a>
+  
+</nav>
+
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+<body >
+<div class="text-center"> 
+  <h3>Лабораторна робота 6</h3>
+  <h4>Обробка структур типу векторів і матриць, стеків та черг мовами функціонального програмування</h4>
+  <h4> Варіант 12</h4>
+</div>
+<div class="row d-flex justify-content-center">
+    <ul class="list-group">
+
+  <a href="#goal" class="text">Мета</a>
+  <a href="#task1" class="text">Завдання 1</a>
+  <a href="#t1anal" class="text">Аналіз завдання 1</a>
+  <a href="#t1code" class="text">Код програми з коментарями 1</a>
+  <a href="#res1" class="text">Результат 1</a>
+  
+  <a href="#task2" class="text">Завдання 2</a>
+  <a href="#t2code" class="text">Код програми з коментарями 2</a>
+  <a href="#res2" class="text">Результат 2</a>
+  <a href="#anal2" class="text">Аналіз достовірності 2</a>
+  <a href="#conc" class="text">Висновок</a>
+</ul>   
+<div class="card mb-3" style="width: 100rem;">
+  <div class="card-body">
+
+<p id="goal"><strong>Мета:</strong> Опанувати теоретичні основи обробки структур типу векторів і матриць, стеків та черг мовами функціонального програмування та розробити програми їх реалізації</p>
+<h2 id="task1"><strong>Ніро-діаграма</strong></h2>
+<img src="./nn.png" alt="">
+<h2 id="task1"><strong>Завдання 1</strong></h2>
+<p>12.1. Створити вектор чисел. Відсортувати вектор за методом бульбашкового сортування. Здійснити пошук заданого користувачем елемента масиву за методом бінарного пошуку.</p>
+<p id="t1anal"><strong>Аналіз завдання</strong></p>
+<p>При виконанні даного завдання, було реалізовано метод сортування бульбакою, та пошук елементу за допомогою бінарного пошук. Для якого якраз і потрібно що масив був відсортований.</p>
+<p id="t1code"><strong>Код програми</strong></p>
+<pre>
+<code> #lang racket
+
+    ;сортування бульбашкою
+    (define (bubble-sort <? v)
+      (define len (vector-length v))
+      (define ref vector-ref)
+      (let loop ([max len] 
+                 [again? #f])
+        (for ([i (in-range 0 (- max 1))]
+              [j (in-range 1 max)])
+          (define vi (ref v i))
+          (when (<? (ref v j) vi) ; якщо j-тий елемен більше за i-тий то свапаєм їх місцями
+            (vector-set! v i (ref v j))
+            (vector-set! v j vi)
+            (set! again? #t)))
+        (when again? (loop (- max 1) #f)))
+      v)
+    ; реалізація бінарного пошуку
+    (define (binarySearch vector start end x); приймає вектор, початок масиву, кінцевий індекс масиву, та саме задане число
+      (let ((mid -1))
+      (if (>= end start)
+            (begin
+              (set! mid ( + start (floor(/ ( - end  start) 2 ))) ) ;беремо середину масиву
+              (if (= (vector-ref vector mid) x ) 
+                   mid (if (> (vector-ref vector mid) x ); якщо середина більше за шуканий тоді рекурсивно шукаємо в масиві від 0 до середини, якщо менше - то навпаки
+                (binarySearch vector start (- mid 1) x) (binarySearch vector (+ mid 1) end x )
+                ))
+              )
+           -1
+      ))
+    )
+    
+    
+    (define v (vector 0 7 6 9 5 3 2 4))
+    (define sorted (bubble-sort < v))
+    (display sorted)
+    (define result (binarySearch sorted 0 (vector-length sorted) 9))
+    (display "\n result is:")
+    (display result)
+</code>
+</pre>
+
+<p id="res1"><strong>Результати</strong></p>
+<img src="./tt1.png" alt="n ;">
+<p id="anal2"><strong>Оцінка достовірності результату</strong></p>
+<p> Спочатку можно побачити відсортований масив чисел, числа йдуть по зростанню з ліва на право. Потім ввиводиться індекс шуканого елементу, а сам 9. (0 2 3 4 5 6 7 9) - і справді 9 знаходиться на 7 індексі даного масива.
+    Таким чином, можно зробити висновок, що код відпрацьовує коректно.
+</p> 
+<h2 id="task2"><strong>Завдання 2</strong></h2>
+<p>12.2. Створити чергу з цілими числами. Вибрати з черги елементи, які є кратними заданому числу і надрукувати їх. Додати до черги парні числа. Кількість елементів, що потрібно додати або вибрати визначає користувач. <br></p>
+<p id="t1anal"><strong>Аналіз завдання</strong></p>
+<p>При виконанні даного завдання, було реалізовано роботу з чергами: додавання елементу та обхід черги.</p>
+<p id="t2code"><strong>Код програми</strong></p>
+<pre>
+<code> #lang racket
+
+    ;додати елемент до черги
+    (define (push-queue n)
+      (begin
+        (set! queue (append queue (list n)))
+      )
+    )
+    ;функція  що виводить лише ті числа що кратні заданому
+    (define (show-numbs source n)
+     (cond [(empty? source) (display " ")]
+              [else
+               (begin
+                 (define current-number (car source))
+                 (cond [(= (remainder current-number n) 0) ;якщо остаток від діленння елементу черги та заданого числа дорівнює ноль, то виводим його
+                       (begin (display current-number) (display " "))
+                        ]
+                 )
+                 (show-numbs (cdr source) n)
+               )
+              ]
+      )
+    )
+    ;додає до черги н-кількість парних чисел 
+    (define (addnumbers source n)
+      (if (= n 0) (display "end") (begin (push-queue (* n 2)) (addnumbers source (- n 1)) ))
+      )
+    
+    
+    (define queue (list))
+    (push-queue 1)
+    (push-queue 4)
+    (push-queue 8)
+    (push-queue 7)
+    (push-queue 9)
+    (push-queue 2)
+    (push-queue 4)
+    (display queue)
+    (display "\n")
+    (display "n: ")
+    (define n (read))
+    (show-numbs queue n)
+    
+    (display "\n")
+    (display "k: ")
+    (define k (read))
+    (addnumbers queue k )
+    (display queue)
+</code>
+</pre>
+<p id="res2"><strong>Результати коду</strong></p>
+<img src="./kk1.png" alt=" 2 ">
+<p id="anal2"><strong>Оцінка достовірності результату</strong></p>
+<p>Спочатку можно побачити виведену на екран чергу з елементами. На далі, було введено число 3, для того щоб вивести числа з черги, які кратні 3. Результат є 9, що є вірним, оскільки числа: 1 4 8 7 2 4 не є кратними 3.
+    Далі було введено число 2, це вказано кількість елементів скільки потрібно додати до черги. (1 4 8 7 9 2 4) - к-сть елементів 7, (1 4 8 7 9 2 4 4 2) - к-ть елементів 9, додалось 2 нових елемента, стільки ж скільки було введено.
+    Таким чином можно зробити висновок, що код відпрацьовує так як потрібно.
+</p> 
+<p id="conc"><strong>Висновки</strong></p>
+<p>В лабораторній роботі було реалізовано обидва завдання, що передбачають маніпуляції з векторами, а також - списками та чергами, реалізованими через списки.
+    В цілому, завдання є доволі легким, щоправда труднощі виникли з розумінням умови завдання. Наприклад у 2 завданні написано "Кількість елементів, що потрібно додати або вибрати визначає користувач" - через "або" невідомо, яку саме реалізацію зробити.
+</p>
+  </div>
+  </div>  
+</div>
+
+</body>
+</html>
